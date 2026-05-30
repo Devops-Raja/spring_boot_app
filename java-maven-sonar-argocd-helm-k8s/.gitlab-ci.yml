@@ -1,0 +1,46 @@
+image: maven:3.8.8-openjdk-11
+
+stages:
+  - checkout
+  - build
+  - test
+  - sonar
+
+variables:
+  SONAR_HOST_URL: http://16.112.28.136:9000/
+  SONAR_LOGIN: ${SONAR_TOKEN}
+  
+before_script:
+  - cd java-maven-sonar-argocd-helm-k8s/spring-boot-app
+  
+checkout:
+  stage: checkout
+  image: alpine:latest
+  script:
+    - echo "GitLab Runner already checks out the repository automatically."
+
+build:
+  stage: build
+  script:
+    - cd spring-boot-app
+    - mvn -B clean package -DskipTests
+  artifacts:
+    paths:
+      - spring-boot-app/target/*.jar
+    expire_in: 1 week
+
+test:
+  stage: test
+  script:
+    - cd spring-boot-app
+    - mvn -B test
+  artifacts:
+    when: always
+    reports:
+      junit: spring-boot-app/target/surefire-reports/*.xml
+
+sonar:
+  stage: sonar
+  script:
+    - cd spring-boot-app
+    - mvn -B sonar:sonar  -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}
