@@ -8,10 +8,6 @@ pipeline {
       args '-u 105:109 -v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
-  options {
-        timeout(time: 1, unit: 'HOURS')
-    }
-         
  
   stages {
 
@@ -19,8 +15,7 @@ pipeline {
             steps {
                 // Place it here, as the first action
                 cleanWs() 
-                
-                checkout scm
+              
             }
         } 
 
