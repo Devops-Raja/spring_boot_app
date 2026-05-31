@@ -1,13 +1,13 @@
 pipeline {
+   options {
+        // This automatically deletes the workspace before the build starts
+        cleanWs()
+    }
   //docker image with maven built in image is used.
   agent {
     docker { 
       image 'maven:3.9-eclipse-temurin-17'
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
-    }
-    options {
-        // This automatically deletes the workspace before the build starts
-        cleanWs()
     }
   }
  
