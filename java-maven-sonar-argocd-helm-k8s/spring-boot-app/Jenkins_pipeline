@@ -12,14 +12,6 @@ pipeline {
  
   stages {
 
-    stage('Cleanup and Checkout') {
-            steps {
-                // Place it here, as the first action
-                cleanWs() 
-              
-            }
-        } 
-
     stage('Install Docker') {
       steps {
         //sh 'apk add --no-cache docker-cli' // If using Alpine-based image
