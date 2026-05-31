@@ -14,6 +14,7 @@ pipeline {
         //sh 'apk add --no-cache docker-cli' // If using Alpine-based image
         // OR
         sh 'apt-get update && apt-get install -y docker.io' // If using Debian/Ubuntu-based
+        sh 'apt-get install -y git'
       }
     }
     stage('Checkout') {
