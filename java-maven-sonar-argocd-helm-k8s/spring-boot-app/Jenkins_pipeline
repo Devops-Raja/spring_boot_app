@@ -82,7 +82,7 @@ pipeline {
 
                     # 2. Add the remote manually since the container lacks metadata
                     # We use the token to authenticate the remote URL
-                    git remote add origin-auth https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git || true
+                    //git remote add origin-auth https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git || true
                     
                     # 3. Perform the update
                     sed -i "s/ImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
@@ -90,7 +90,8 @@ pipeline {
                     # 4. Commit and push
                     git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    git push origin-auth HEAD:main
+                    //git push origin-auth HEAD:main
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git
                 '''
             }
         }
