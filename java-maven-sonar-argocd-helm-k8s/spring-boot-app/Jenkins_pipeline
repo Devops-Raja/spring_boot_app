@@ -8,12 +8,7 @@ pipeline {
   }
  
   stages {
-    stage('Checkout') {
-      steps {
-        sh 'echo passed'
-        // git branch: 'main', url: 'https://github.com/Devops-Raja/spring_boot_app.git'
-      }
-    }
+    
     stage('Install Docker') {
       steps {
         sh 'apk add --no-cache docker-cli' // If using Alpine-based image
@@ -21,6 +16,13 @@ pipeline {
         // sh 'apt-get update && apt-get install -y docker.io' // If using Debian/Ubuntu-based
       }
     }
+    stage('Checkout') {
+      steps {
+        sh 'echo passed'
+        // git branch: 'main', url: 'https://github.com/Devops-Raja/spring_boot_app.git'
+      }
+    }
+    
     stage('Build and Test') {
       steps {
         sh 'ls -ltr'
