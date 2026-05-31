@@ -77,7 +77,7 @@ pipeline {
             withCredentials([string(credentialsId: 'git_hub_token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
                   
-                    git config --global --add safe.directory /var/lib/jenkins/workspace/spring_boot_app
+                    git config --global --add safe.directory '*'
                     git config --global user.email "ram_repo@gmail.com"
                     git config --global user.name "Ram_RR"
                     
