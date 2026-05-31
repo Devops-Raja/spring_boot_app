@@ -80,6 +80,9 @@ pipeline {
                     git config --global --add safe.directory /var/lib/jenkins/workspace/spring_boot_app
                     git config --global user.email "ram_repo@gmail.com"
                     git config --global user.name "Ram_RR"
+                    
+                    git fetch origin main
+                    git rebase origin/main
 
           
                    
