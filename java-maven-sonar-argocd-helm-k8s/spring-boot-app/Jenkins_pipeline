@@ -9,9 +9,21 @@ pipeline {
     }
   }
   options {
-        // Automatically clean the workspace to prevent file buildup
-        cleanWs()
+        timeout(time: 1, unit: 'HOURS')
     }
+
+  stages {
+        stage('Cleanup and Checkout') {
+            steps {
+                // Place it here, as the first action
+                cleanWs() 
+                
+                // Ensure ownership is correct
+                sh 'sudo chown -R 105:109 /var/lib/jenkins/workspace/spring_boot_app'
+                
+                checkout scm
+            }
+        }  
  
   stages {
 
