@@ -10,7 +10,7 @@ pipeline {
     stage('Checkout') {
       steps {
         sh 'echo passed'
-        git branch: 'main', url: 'https://github.com/Devops-Raja/spring_boot_app.git'
+        // git branch: 'main', url: 'https://github.com/Devops-Raja/spring_boot_app.git'
       }
     }
     stage('Build and Test') {
