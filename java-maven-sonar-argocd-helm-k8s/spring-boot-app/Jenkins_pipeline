@@ -4,7 +4,8 @@ pipeline {
   agent {
     docker { 
       image 'maven:3.9-eclipse-temurin-17'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+      //args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+      args '-u 105 -v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
  
@@ -75,22 +76,19 @@ pipeline {
       steps {
             withCredentials([string(credentialsId: 'git_hub_token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
-                    # 1. Configure identity
+                  
                     git config --global --add safe.directory /var/lib/jenkins/workspace/spring_boot_app
                     git config --global user.email "ram_repo@gmail.com"
                     git config --global user.name "Ram_RR"
 
-                    # 2. Add the remote manually since the container lacks metadata
-                    # We use the token to authenticate the remote URL
-                    #git remote add origin-auth https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git || true
-                    
-                    # 3. Perform the update
+          
+                   
                     sed -i "s/ImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                     
-                    # 4. Commit and push
+                   
                     git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    #git push origin-auth HEAD:main
+                  
                     git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:refs/heads/main
                 '''
             }
