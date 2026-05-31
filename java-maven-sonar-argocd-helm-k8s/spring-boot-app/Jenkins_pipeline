@@ -1,8 +1,5 @@
 pipeline {
-   options {
-        // This automatically deletes the workspace before the build starts
-        cleanWs()
-    }
+ 
   //docker image with maven built in image is used.
   agent {
     docker { 
