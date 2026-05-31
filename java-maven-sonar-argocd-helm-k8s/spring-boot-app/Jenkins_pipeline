@@ -72,8 +72,9 @@ pipeline {
             GIT_USER_NAME = "Devops-Raja"
         }
         steps {
+          
+          checkout scm
           dir ('.') {
-            checkout scm
             withCredentials([string(credentialsId: 'git_hub_token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
                     git config user.email "ram_repo@gmail.com"
