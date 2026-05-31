@@ -67,27 +67,32 @@ pipeline {
       }
     }
     stage('Update Deployment File') {
-        environment {
-            GIT_REPO_NAME = "spring-boot-app"
-            GIT_USER_NAME = "Devops-Raja"
+      environment {
+        GIT_REPO_NAME = "spring-boot-app"
+        GIT_USER_NAME = "Devops-Raja"
         }
-        steps {
-          sh 'apt-get update && apt-get install -y git'
-          //checkout scm
-          
+      steps {
             withCredentials([string(credentialsId: 'git_hub_token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
-                    git config user.email "ram_repo@gmail.com"
-                    git config user.name "Ram_RR"
-                    BUILD_NUMBER=${BUILD_NUMBER}
+                    # 1. Configure identity
+                    git config --global user.email "ram_repo@gmail.com"
+                    git config --global user.name "Ram_RR"
+
+                    # 2. Add the remote manually since the container lacks metadata
+                    # We use the token to authenticate the remote URL
+                    git remote add origin-auth https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git || true
+                    
+                    # 3. Perform the update
                     sed -i "s/ImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+                    
+                    # 4. Commit and push
                     git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                    git push origin-auth HEAD:main
                 '''
             }
-          
         }
     }
   }
 }
+
