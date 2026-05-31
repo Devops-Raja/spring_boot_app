@@ -73,7 +73,7 @@ pipeline {
         }
         steps {
           sh 'apt-get update && apt-get install -y git'
-          checkout scm
+          //checkout scm
           
             withCredentials([string(credentialsId: 'git_hub_token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
