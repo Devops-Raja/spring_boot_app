@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-app 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sp-app
+  template:
+    metadata:
+      labels:
+        app: sp-app
+    spec:
+      containers:
+        - name: spring-boot-app
+          image: ram7800/spring_boot_app:ImageTag
+          ports:
+            - containerPort: 8080
