@@ -3,23 +3,14 @@ pipeline {
   //docker image with maven built in image is used.
   agent {
     docker { 
-      image 'maven:3.9-eclipse-temurin-17'
+      image 'ram7800/maven_jdk:v1'
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
-      //args '-u 105:109 -v /var/run/docker.sock:/var/run/docker.sock'
+      
       
     }
   }
  
   stages {
-
-    stage('Install Docker') {
-      steps {
-        //sh 'apk add --no-cache docker-cli' // If using Alpine-based image
-        // OR
-        sh 'sudo apt-get update && apt-get install -y docker.io' // If using Debian/Ubuntu-based
-        sh 'sudo apt-get install -y git'
-      }
-    }
     stage('Checkout') {
       steps {
         sh 'echo passed'
