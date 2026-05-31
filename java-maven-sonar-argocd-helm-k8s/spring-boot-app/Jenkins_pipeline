@@ -77,20 +77,19 @@ pipeline {
             withCredentials([string(credentialsId: 'git_hub_token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
                   
-                    git rebase --abort || true
+                    rm -rf .git
+                    git init
+                    git remote add origin https://${GITHUB_TOKEN}@github.com/Devops-Raja/spring_boot_app.git
+                    git fetch origin main
+                    git reset --hard origin/main
                     git config --global --add safe.directory '*'
                     git config --global user.email "ram_repo@gmail.com"
                     git config --global user.name "Ram_RR"
-                    
-                    git fetch origin main
-                    git reset --hard origin/main
-
-          
-                   
+                     
                     sed -i "s/ImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                     
-                   
-                    git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
+                    git add .
+                    #git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                    
                     git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:refs/heads/main
