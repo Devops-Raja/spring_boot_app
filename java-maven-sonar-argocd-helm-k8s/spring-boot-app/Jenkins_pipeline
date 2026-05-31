@@ -77,12 +77,13 @@ pipeline {
             withCredentials([string(credentialsId: 'git_hub_token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
                   
+                    git rebase --abort || true
                     git config --global --add safe.directory '*'
                     git config --global user.email "ram_repo@gmail.com"
                     git config --global user.name "Ram_RR"
                     
-                   git fetch origin main
-                   git reset --hard origin/main
+                    git fetch origin main
+                    git reset --hard origin/main
 
           
                    
