@@ -6,18 +6,19 @@ pipeline {
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
     }
   }
-  stage('Install Docker') {
-    steps {
-        sh 'apk add --no-cache docker-cli' // If using Alpine-based image
-        // OR
-        // sh 'apt-get update && apt-get install -y docker.io' // If using Debian/Ubuntu-based
-      }
-    }
+ 
   stages {
     stage('Checkout') {
       steps {
         sh 'echo passed'
         // git branch: 'main', url: 'https://github.com/Devops-Raja/spring_boot_app.git'
+      }
+    }
+    stage('Install Docker') {
+      steps {
+        sh 'apk add --no-cache docker-cli' // If using Alpine-based image
+        // OR
+        // sh 'apt-get update && apt-get install -y docker.io' // If using Debian/Ubuntu-based
       }
     }
     stage('Build and Test') {
