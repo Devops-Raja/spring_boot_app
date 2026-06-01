@@ -49,7 +49,7 @@ pipeline {
       agent {
                 docker { 
                   image 'ram7800/maven_jdk:v1'
-                  args '-u 105:109'
+                  //args '-u 105:109'
                    }
                 
             }
