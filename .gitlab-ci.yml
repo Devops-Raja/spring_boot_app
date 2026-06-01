@@ -1,0 +1,101 @@
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+variables:
+  # Define your application path relative to the repository root
+  APP_DIR: "java-maven-sonar-argocd-helm-k8s/spring-boot-app"
+  MANIFEST_DIR: "java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests"
+  DOCKER_IMAGE: "ram7800/spring_boot_app:${CI_PIPELINE_IID}"
+  SONAR_URL: "http://18.60.242.200:9000"
+
+# Global Cache: Shares downloaded Maven dependencies across jobs so builds stay fast
+cache:
+  key: "${CI_COMMIT_REF_SLUG}"
+  paths:
+    - .m2/repository
+
+# ==========================================
+# 1. BUILD STAGE
+# ==========================================
+build_job:
+  stage: build
+  image: maven:3.9.6-eclipse-temurin-17
+  script:
+    - echo "Navigating to application directory..."
+    - cd $APP_DIR
+    - echo "Compiling and packaging the Spring Boot application..."
+    - mvn clean package -B -U -DskipTests -Dmaven.repo.local=.m2/repository
+  artifacts:
+    expire_in: 1 hr
+    paths:
+      - $APP_DIR/target/*.jar
+
+# ==========================================
+# 2. SONAR TESTING STAGE
+# ==========================================
+sonar_job:
+  stage: test
+  image: maven:3.9.6-eclipse-temurin-17
+  dependencies:
+    - build_job  # Inherits artifacts from the build stage
+  script:
+    - cd $APP_DIR
+    - echo "Executing SonarQube static analysis..."
+    # SONAR_TOKEN must be configured in GitLab CI/CD Variables (Settings -> CI/CD -> Variables)
+    - mvn sonar:sonar -B -Dsonar.login=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dmaven.repo.local=.m2/repository
+
+# ==========================================
+# 3. DOCKER BUILD & PUSH STAGE
+# ==========================================
+docker_job:
+  stage: package
+  image: docker:24.0.7
+  services:
+    - docker:24.0.7-dind  # Enables Docker-in-Docker execution context
+  dependencies:
+    - build_job
+  before_script:
+    # DOCKER_USER and DOCKER_PASSWORD must be configured in your GitLab variables
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
+  script:
+    - cd $APP_DIR
+    - echo "Building Docker image..."
+    - docker build --no-cache -t $DOCKER_IMAGE .
+    - echo "Pushing Docker image to registry..."
+    - docker push $DOCKER_IMAGE
+
+# ==========================================
+# 4. UPDATE MANIFEST STAGE (GitOps / Argo CD)
+# ==========================================
+update_manifest_job:   
+  stage: deploy
+  image: alpine:3.18
+  before_script:
+    - apk add --no-cache git sed
+  script:
+    - echo "Configuring Git identities..."
+    - git config --global user.email "ram_repo@gmail.com"
+    - git config --global user.name "Ram_RR"
+    
+    # Configure remote target using your project access token (GITLAB_TOKEN variable)
+    - git remote set-url origin https://oauth2:${GITLAB_TOKEN}@gitlab.com/${CI_PROJECT_PATH}.git
+    - git fetch origin ${CI_COMMIT_REF_NAME}
+    - git checkout ${CI_COMMIT_REF_NAME}
+    
+    - echo "Updating manifest file deployment.yaml with build version ${CI_PIPELINE_IID}..."
+    - sed -i "s|image: .*|image: ram7800/spring_boot_app:${CI_PIPELINE_IID}|g" $MANIFEST_DIR/deployment.yaml
+      
+    - git add $MANIFEST_DIR/deployment.yaml
+    # Commit changes only if modifications are explicitly present
+    - |
+      if git diff-index --cached --quiet HEAD --; then
+        echo "No image tag modification found. Skipping push."
+      else
+        git commit -m "GitOps: Update deployment image to version ${CI_PIPELINE_IID} [skip ci]"
+        git push origin HEAD:${CI_COMMIT_REF_NAME}
+      fi
+  only:
+    - main  # Restricts deployment updates strictly to your production/main branch
