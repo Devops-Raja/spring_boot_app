@@ -14,7 +14,7 @@ public class StartApplication {
     public String index(final Model model) {
         model.addAttribute("title", "I have successfuly built a sprint boot application using Maven");
         model.addAttribute("msg", "This application is deployed on to Kubernetes using Argo CD");
-        model.addAttribute("msg", "Great learning after 100 builds ");
+        model.addAttribute("msg", "welcome to new builds ");
         return "index";
     }
 
