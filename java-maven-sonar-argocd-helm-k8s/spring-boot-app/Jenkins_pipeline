@@ -38,7 +38,7 @@ pipeline {
       steps {
           
           sh 'pwd'
-          sh 'cd  java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package -B -U -DskipTests '  
+          sh ' mvn clean package -B -U -DskipTests '  
           sh 'ls -lt target/*.jar'
 
         
