@@ -45,7 +45,7 @@ pipeline {
         dir ('java-maven-sonar-argocd-helm-k8s/spring-boot-app'){
           
           sh 'pwd'
-          sh 'mvn clean package -U'  
+          sh 'mvn clean package -U -X -e'  
           sh 'ls -lt target/*.jar'
 
         }
