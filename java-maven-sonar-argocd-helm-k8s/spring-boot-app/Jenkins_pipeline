@@ -126,7 +126,11 @@ pipeline {
         }
       }
      
-     post {
+     
+
+    } //end of stages 
+
+    post {
         success {
             script {
                 // Calculate the previous build number
@@ -151,8 +155,6 @@ pipeline {
             }
         }
     }
-
-    } //end of stages 
   
 } //end of pipeline
 
