@@ -9,7 +9,7 @@ variables:
   APP_DIR: "java-maven-sonar-argocd-helm-k8s/spring-boot-app"
   MANIFEST_DIR: "java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests"
   DOCKER_IMAGE: "ram7800/spring_boot_app:${CI_PIPELINE_IID}"
-  SONAR_URL: "http://18.60.242.200:9000"
+  SONAR_URL: "http://18.60.242.200:9000"  ##replace with respective URL
 
 # Global Cache: Shares downloaded Maven dependencies across jobs so builds stay fast
 cache:
@@ -17,7 +17,7 @@ cache:
   paths:
     - .m2/repository
 
-# ==========================================
+
 # 1. BUILD STAGE
 # ==========================================
 build_job:
@@ -33,7 +33,7 @@ build_job:
     paths:
       - $APP_DIR/target/*.jar
 
-# ==========================================
+
 # 2. SONAR TESTING STAGE
 # ==========================================
 sonar_job:
@@ -47,7 +47,7 @@ sonar_job:
     # SONAR_TOKEN must be configured in GitLab CI/CD Variables (Settings -> CI/CD -> Variables)
     - mvn sonar:sonar -B -Dsonar.login=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dmaven.repo.local=.m2/repository
 
-# ==========================================
+
 # 3. DOCKER BUILD & PUSH STAGE
 # ==========================================
 docker_job:
@@ -67,8 +67,8 @@ docker_job:
     - echo "Pushing Docker image to registry..."
     - docker push $DOCKER_IMAGE
 
-# ==========================================
-# 4. UPDATE MANIFEST STAGE (GitOps / Argo CD)
+
+# 4. UPDATE MANIFEST STAGE (GitOps / Argo CD)  - But gitlab will not allow you to create a token for free tier
 # ==========================================
 update_manifest_job:   
   stage: deploy
