@@ -78,14 +78,21 @@ pipeline {
                     git reset --hard origin/main
                     
                     
-                  
-                    sed -i "s/ImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
-                    
+                    # This searches for the line starting with 'image:' and replaces the value
+                    sed -i 's|image: .*|image: '${BUILD_NUMBER}'|g' java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
+                    #sed -i "s/ImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                     git add .
-                    #git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
+
+                    
+                    if git diff-index --cached --quiet HEAD --; then
+                       echo "No changes detected. Skipping commit and push."
+                    else
+                    
+            
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                    
                     git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:refs/heads/main
+                    fi
                 '''
             }
         }
