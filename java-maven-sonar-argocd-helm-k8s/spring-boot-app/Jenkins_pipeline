@@ -1,18 +1,27 @@
 pipeline {
  
-  agent any
-
-  stages {
-      
-
-      stage('Checkout') {
-        agent {
+   agent {
           docker { 
               image 'ram7800/maven_jdk:v1'
               //args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
               args '-u 0:0'
             }
       }
+  options {
+        // Prevents parallel builds from stepping on each other's workspaces
+        disableConcurrentBuilds()
+    }
+  stages {
+
+      stage('Initialize & Clean') {
+            steps {
+                // Wipe any old workspace leftovers safely at the beginning of the run
+                cleanWs(deleteDirs: true)
+            }
+        }
+
+      stage('Checkout') {
+       
         steps {
                 // Delete everything using host shell to ensure permissions
                 //sh 'rm -rf * .git' 
@@ -28,13 +37,7 @@ pipeline {
       }
     
     stage('Build and Test') {
-      agent {
-          docker { 
-              image 'ram7800/maven_jdk:v1'
-              //args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
-              args '-u 0:0'
-            }
-      }
+
       environment {
         DOCKER_IMAGE = "ram7800/spring_boot_app:${BUILD_NUMBER}"
       }
@@ -51,14 +54,7 @@ pipeline {
     
 
     stage('Debug Java') {
-      agent {
-                docker { 
-                  image 'ram7800/maven_jdk:v1'
-                  //args '-u 105:109'
-                  args '-u 0:0'
-                   }
-                
-            }
+
      steps {
         sh 'java -version'
         sh 'mvn -version'
