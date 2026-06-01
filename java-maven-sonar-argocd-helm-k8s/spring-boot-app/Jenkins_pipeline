@@ -26,7 +26,7 @@ pipeline {
           docker { 
               image 'ram7800/maven_jdk:v1'
               //args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
-              //args '-u 105:109'
+              args '-u 0:0'
             }
       }
       environment {
@@ -108,7 +108,7 @@ pipeline {
 
                     git remote set-url origin https://${GITHUB_TOKEN}@github.com/Devops-Raja/spring_boot_app.git
                     git fetch origin main
-                    #git reset --hard origin/main
+                    git reset --hard origin/main
                     
                     
                     # This searches for the line starting with 'image:' and replaces the value
