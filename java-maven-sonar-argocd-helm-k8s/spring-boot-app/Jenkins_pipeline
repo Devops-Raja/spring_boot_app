@@ -49,11 +49,7 @@ pipeline {
     }
 
     stage('Static Code Analysis') {
-      agent { docker { 
-        image 'ram7800/maven_jdk:v1'
-        //args '-u 105:109'
-        args '-u 0:0'
-         } }
+
       environment {
         SONAR_URL = "http://18.60.242.200:9000/"
       }
