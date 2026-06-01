@@ -1,20 +1,21 @@
 pipeline {
  
   //docker image with maven built in image is used.
-  agent any
+  agent {
+    docker { 
+      image 'ram7800/maven_jdk:v1'
+      //args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+      args '-u 105:109 -v /var/run/docker.sock:/var/run/docker.sock'
+    }
+  }
  
   stages {
-      stage('Cleanup') {
-            agent any // Runs on host
-            steps {
-                cleanWs()
-            }
-      }
+       
 
-      stage(Checkout') {
+      stage('Cleanup & Checkout') {
         steps {
                 // Delete everything using host shell to ensure permissions
-                //sh 'rm -rf * .git' 
+                sh 'rm -rf * .git' 
                 
                 // Perform checkout inside the container as the correct user
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/Devops-Raja/spring_boot_app.git']]])
@@ -22,20 +23,24 @@ pipeline {
       }
     
     stage('Build and Test') {
-      agent {
-          docker { 
-              image 'ram7800/maven_jdk:v1'
-              //args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
-              args ' -v /var/run/docker.sock:/var/run/docker.sock'
-            }
-      }
       environment {
         DOCKER_IMAGE = "ram7800/spring_boot_app:${BUILD_NUMBER}"
       }
       steps {
-       
-        sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'    
-       }
+        script {
+            // Run docker commands on the host directly using 'sh'
+            // This bypasses the container's internal permissions
+            dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+
+                sh "docker build -t ${DOCKER_IMAGE} ."
+                
+                withCredentials([usernamePassword(credentialsId: 'docker_cred', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    sh "echo $PASS | docker login -u $USER --password-stdin"
+                    sh "docker push ${DOCKER_IMAGE}"
+                }
+            }
+        }
+        
       }
     }
 
