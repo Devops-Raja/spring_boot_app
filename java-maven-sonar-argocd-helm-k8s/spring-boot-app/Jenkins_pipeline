@@ -47,6 +47,7 @@ pipeline {
     }
 
     stage('Static Code Analysis') {
+      agent { docker { image 'ram7800/maven_jdk:v1' } }
       environment {
         SONAR_URL = "http://18.60.242.200:9000/"
       }
@@ -58,6 +59,7 @@ pipeline {
       }
     }
     stage('Build and Push Docker Image') {
+      agent any
       environment {
         DOCKER_IMAGE = "ram7800/spring_boot_app:${BUILD_NUMBER}"
         // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
@@ -74,6 +76,7 @@ pipeline {
       }
     }
     stage('Update Deployment File') {
+      agent any
       environment {
         GIT_REPO_NAME = "spring_boot_app"
         GIT_USER_NAME = "Devops-Raja"
