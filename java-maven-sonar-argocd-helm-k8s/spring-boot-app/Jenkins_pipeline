@@ -36,13 +36,12 @@ pipeline {
         MAVEN_OPTS   = "-Xmx1024m -XX:+UseG1GC"
       }
       steps {
-        dir ('java-maven-sonar-argocd-helm-k8s/spring-boot-app'){
           
           sh 'pwd'
-          sh 'mvn clean package -B -U -DskipTests '  
+          sh 'cd  java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package -B -U -DskipTests '  
           sh 'ls -lt target/*.jar'
 
-        }
+        
        }
       }
     
