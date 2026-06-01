@@ -4,8 +4,8 @@ pipeline {
   agent {
     docker { 
       image 'ram7800/maven_jdk:v1'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
-      
+      //args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+      args '-u 105:109 -v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
  
@@ -16,13 +16,16 @@ pipeline {
                 cleanWs()
       }
     }   
-    
-    stage('Checkout') {
-      steps {
-        sh 'echo passed'
-        // git branch: 'main', url: 'https://github.com/Devops-Raja/spring_boot_app.git'
+
+      stage('Cleanup & Checkout') {
+        steps {
+                // Delete everything using host shell to ensure permissions
+                sh 'rm -rf * .git' 
+                
+                // Perform checkout inside the container as the correct user
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/Devops-Raja/spring_boot_app.git']]])
+            }
       }
-    }
     
     stage('Build and Test') {
       steps {
