@@ -127,6 +127,7 @@ pipeline {
     post {
          always {
             cleanWs(deleteDirs: true)
+            
         }
        
         success {
