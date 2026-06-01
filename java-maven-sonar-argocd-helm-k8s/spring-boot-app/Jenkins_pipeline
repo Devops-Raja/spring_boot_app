@@ -7,6 +7,13 @@ pipeline {
               args '-u 0:0 --shm-size=512m -v /var/run/docker.sock:/var/run/docker.sock'
             }
       }
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 10, unit: 'MINUTES')
+        
+        // FIX: This cleans the workspace safely at the OS level BEFORE the pipeline stages begin
+        skipDefaultCheckout(false) 
+    }
  
   stages {
 
@@ -127,7 +134,7 @@ pipeline {
     post {
          always {
             cleanWs(deleteDirs: true)
-            
+
         }
        
         success {
