@@ -23,7 +23,23 @@ pipeline {
       }
     
     stage('Build and Test') {
+      environment {
+        DOCKER_IMAGE = "ram7800/spring_boot_app:${BUILD_NUMBER}"
+      }
       steps {
+        script {
+            // Run docker commands on the host directly using 'sh'
+            // This bypasses the container's internal permissions
+            dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+
+                sh "docker build -t ${DOCKER_IMAGE} ."
+                
+                withCredentials([usernamePassword(credentialsId: 'docker_cred', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    sh "echo $PASS | docker login -u $USER --password-stdin"
+                    sh "docker push ${DOCKER_IMAGE}"
+                }
+            }
+        }
         sh 'ls -ltr'
         // build the project and create a JAR file
         sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
