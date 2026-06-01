@@ -26,7 +26,7 @@ pipeline {
           docker { 
               image 'ram7800/maven_jdk:v1'
               //args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
-              args ' -v /var/run/docker.sock:/var/run/docker.sock'
+              args '-u 105:109'
             }
       }
       environment {
@@ -41,7 +41,11 @@ pipeline {
 
     stage('Debug Java') {
       agent {
-                docker { image 'ram7800/maven_jdk:v1' }
+                docker { 
+                  image 'ram7800/maven_jdk:v1'
+                  args '-u 105:109'
+                   }
+                
             }
      steps {
         sh 'java -version'
@@ -50,7 +54,10 @@ pipeline {
     }
 
     stage('Static Code Analysis') {
-      agent { docker { image 'ram7800/maven_jdk:v1' } }
+      agent { docker { 
+        image 'ram7800/maven_jdk:v1'
+        args '-u 105:109'
+         } }
       environment {
         SONAR_URL = "http://18.60.242.200:9000/"
       }
