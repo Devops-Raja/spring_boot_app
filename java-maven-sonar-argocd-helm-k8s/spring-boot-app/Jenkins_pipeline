@@ -1,8 +1,14 @@
 pipeline {
  
-  //docker image with maven built in image is used.
   agent any
- 
+
+  options {
+        // Prevent concurrent builds to avoid workspace locking
+        disableConcurrentBuilds()
+        // Skip default checkout to have full control over the process
+        skipDefaultCheckout()
+    }
+  
   stages {
       stage('Cleanup') {
             agent any // Runs on host
@@ -15,6 +21,7 @@ pipeline {
         steps {
                 // Delete everything using host shell to ensure permissions
                 //sh 'rm -rf * .git' 
+                cleanWs(deleteDirs: true)
                 checkout([$class: 'GitSCM', 
                     branches: [[name: '*/main']], 
                     extensions: [[$class: 'CleanBeforeCheckout']], 
