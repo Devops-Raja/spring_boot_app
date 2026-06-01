@@ -37,7 +37,7 @@ pipeline {
           docker { 
               image 'ram7800/maven_jdk:v1'
               //args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
-              args '-u 105:109'
+              args '-u 0:0'
             }
       }
       environment {
@@ -46,7 +46,6 @@ pipeline {
       steps {
         dir ('java-maven-sonar-argocd-helm-k8s/spring-boot-app'){
           
-
           sh 'pwd'
           sh 'mvn clean package -U'  
           sh 'ls -lt target/*.jar'
@@ -60,7 +59,8 @@ pipeline {
       agent {
                 docker { 
                   image 'ram7800/maven_jdk:v1'
-                  args '-u 105:109'
+                  //args '-u 105:109'
+                  args '-u 0:0'
                    }
                 
             }
@@ -73,7 +73,8 @@ pipeline {
     stage('Static Code Analysis') {
       agent { docker { 
         image 'ram7800/maven_jdk:v1'
-        args '-u 105:109'
+        //args '-u 105:109'
+        args '-u 0:0'
          } }
       environment {
         SONAR_URL = "http://18.60.242.200:9000/"
