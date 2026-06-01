@@ -15,7 +15,7 @@ pipeline {
         steps {
                 // Delete everything using host shell to ensure permissions
                 //sh 'rm -rf * .git' 
-                //cleanWs(deleteDirs: true)
+                cleanWs(deleteDirs: true)
                 
                 // Perform checkout inside the container as the correct user
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/Devops-Raja/spring_boot_app.git']]])
@@ -80,7 +80,7 @@ pipeline {
       }
     }
     stage('Update Deployment File') {
-      agent any
+      
       environment {
         GIT_REPO_NAME = "spring_boot_app"
         GIT_USER_NAME = "Devops-Raja"
@@ -125,6 +125,9 @@ pipeline {
     } //end of stages 
 
     post {
+         always {
+            cleanWs(deleteDirs: true)
+        }
        
         success {
             script {
