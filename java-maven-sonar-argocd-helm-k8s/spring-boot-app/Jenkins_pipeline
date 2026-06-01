@@ -11,7 +11,7 @@ pipeline {
             }
       }
 
-      stage(Checkout') {
+      stage('Checkout') {
         steps {
                 // Delete everything using host shell to ensure permissions
                 //sh 'rm -rf * .git' 
@@ -40,6 +40,9 @@ pipeline {
     
 
     stage('Debug Java') {
+      agent {
+                docker { image 'ram7800/maven_jdk:v1' }
+            }
      steps {
         sh 'java -version'
         sh 'mvn -version'
@@ -85,18 +88,19 @@ pipeline {
             withCredentials([string(credentialsId: 'git_hub_token', variable: 'GITHUB_TOKEN')]) {
                 sh '''
                     git config --global --add safe.directory '*'
-                    rm -rf .git
-                    git init
+                    ##rm -rf .git
+                    ##git init
                     git config --global user.email "ram_repo@gmail.com"
                     git config --global user.name "Ram_RR"
 
                     git remote add origin https://${GITHUB_TOKEN}@github.com/Devops-Raja/spring_boot_app.git
-                    git fetch origin main
-                    git reset --hard origin/main
+                    #git fetch origin main
+                    #git reset --hard origin/main
                     
                     
                     # This searches for the line starting with 'image:' and replaces the value
-                    sed -i 's|image: .*|image: '${BUILD_NUMBER}'|g' java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
+                    sed -i 's|image: .*|image: ram7800/spring_boot_app:'${BUILD_NUMBER}'|g' java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
+                    #sed -i 's|image: .*|image: '${BUILD_NUMBER}'|g' java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                     #sed -i "s/ImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                     git add .
 
