@@ -125,9 +125,34 @@ pipeline {
             }
         }
       }
+     
+     post {
+        success {
+            script {
+                // Calculate the previous build number
+                def previousBuildNumber = (BUILD_NUMBER.toInteger() - 1).toString()
+                def previousImage = "ram7800/spring_boot_app:${previousBuildNumber}"
+                
+                echo "Build successful! Cleaning up previous local image: ${previousImage}"
+                
+                // Remove the previous image tag if it exists locally
+                sh "docker rmi ${previousImage} || true"
+                
+                // Clean up any untagged/dangling intermediate build layers
+                sh "docker image prune -f"
+            }
+        }
+        failure {
+            script {
+                echo "Build failed! Removing current broken image to save space."
+                // If the build fails, clean up the current image immediately since it's broken
+                sh "docker rmi ram7800/spring_boot_app:${BUILD_NUMBER} || true"
+                sh "docker image prune -f"
+            }
+        }
     }
-  
 
+    } //end of stages 
   
-}
+} //end of pipeline
 
