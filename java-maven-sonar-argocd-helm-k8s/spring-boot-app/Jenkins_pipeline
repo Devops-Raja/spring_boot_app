@@ -10,13 +10,6 @@ pipeline {
  
   stages {
 
-      stage('Initialize & Clean') {
-            steps {
-                // Wipe any old workspace leftovers safely at the beginning of the run
-                cleanWs(deleteDirs: true)
-            }
-        }
-
       stage('Checkout') {
        
         steps {
