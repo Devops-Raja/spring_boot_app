@@ -10,12 +10,7 @@ pipeline {
   }
  
   stages {
-     stage('Cleanup') {
-        steps {
-                // This forces Jenkins to wipe the directory clean using the 'jenkins' system user
-                cleanWs()
-      }
-    }   
+       
 
       stage('Cleanup & Checkout') {
         steps {
