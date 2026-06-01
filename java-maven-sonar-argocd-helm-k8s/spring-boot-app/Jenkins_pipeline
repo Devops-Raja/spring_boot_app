@@ -10,18 +10,13 @@ pipeline {
     }
   
   stages {
-      stage('Cleanup') {
-            agent any // Runs on host
-            steps {
-                cleanWs()
-            }
-      }
+      
 
       stage('Checkout') {
         steps {
                 // Delete everything using host shell to ensure permissions
                 //sh 'rm -rf * .git' 
-                //cleanWs(deleteDirs: true)
+                cleanWs(deleteDirs: true)
                 checkout([$class: 'GitSCM', 
                     branches: [[name: '*/main']], 
                     extensions: [[$class: 'CleanBeforeCheckout']], 
