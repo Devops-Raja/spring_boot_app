@@ -33,8 +33,14 @@ pipeline {
         DOCKER_IMAGE = "ram7800/spring_boot_app:${BUILD_NUMBER}"
       }
       steps {
-        sh 'rm -rf java-maven-sonar-argocd-helm-k8s/spring-boot-app/target'
-        sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'    
+        dir ('java-maven-sonar-argocd-helm-k8s/spring-boot-app'){
+          
+
+          sh 'pwd'
+          sh 'mvn clean package -U'  
+          sh 'ls -lt target/*.jar'
+
+        }
        }
       }
     
