@@ -30,10 +30,11 @@ pipeline {
       }
       steps {
           
-          sh 'pwd'
-          sh ' mvn clean package -B -U -DskipTests '  
-          sh 'ls -lt target/*.jar'
-
+         dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                sh 'pwd'       // This will now show the full subfolder path
+                sh 'ls -la'    // This will print your pom.xml directly to confirm it's there
+                sh 'mvn clean package -B -U -DskipTests'
+            }
         
        }
       }
