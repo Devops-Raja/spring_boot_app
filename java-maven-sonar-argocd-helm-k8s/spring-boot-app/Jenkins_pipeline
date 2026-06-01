@@ -10,6 +10,13 @@ pipeline {
   }
  
   stages {
+     stage('Cleanup') {
+        steps {
+                // This forces Jenkins to wipe the directory clean using the 'jenkins' system user
+                cleanWs()
+      }
+    }   
+    
     stage('Checkout') {
       steps {
         sh 'echo passed'
@@ -83,7 +90,7 @@ pipeline {
                     #sed -i "s/ImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                     git add .
 
-                    
+
                     if git diff-index --cached --quiet HEAD --; then
                        echo "No changes detected. Skipping commit and push."
                     else
