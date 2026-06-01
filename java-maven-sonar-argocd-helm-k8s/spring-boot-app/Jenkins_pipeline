@@ -3,12 +3,7 @@ pipeline {
   agent any
 
   stages {
-      stage('Cleanup') {
-            agent any // Runs on host
-            steps {
-                cleanWs()
-            }
-      }
+      
 
       stage('Checkout') {
         agent {
