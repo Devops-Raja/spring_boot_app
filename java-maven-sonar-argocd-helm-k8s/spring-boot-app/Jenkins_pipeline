@@ -2,6 +2,12 @@ pipeline {
  
   //docker image with maven built in image is used.
   agent any
+
+  post {
+        always {
+            cleanWs() 
+        }
+    }
  
   stages {
       stage('Cleanup') {
@@ -14,10 +20,14 @@ pipeline {
       stage('Checkout') {
         steps {
                 // Delete everything using host shell to ensure permissions
-                sh 'rm -rf * .git' 
-                
+                //sh 'rm -rf * .git' 
+                checkout([$class: 'GitSCM', 
+                    branches: [[name: '*/main']], 
+                    extensions: [[$class: 'CleanBeforeCheckout']], 
+                    userRemoteConfigs: [[url: 'https://github.com/Devops-Raja/spring_boot_app.git']]
+                ])
                 // Perform checkout inside the container as the correct user
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/Devops-Raja/spring_boot_app.git']]])
+                //checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/Devops-Raja/spring_boot_app.git']]])
             }
       }
     
