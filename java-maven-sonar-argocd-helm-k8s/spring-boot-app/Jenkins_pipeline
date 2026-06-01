@@ -7,10 +7,7 @@ pipeline {
               args '-u 0:0 --shm-size=512m -v /var/run/docker.sock:/var/run/docker.sock'
             }
       }
-  options {
-        // Prevents parallel builds from stepping on each other's workspaces
-        disableConcurrentBuilds()
-    }
+ 
   stages {
 
       stage('Initialize & Clean') {
@@ -42,7 +39,7 @@ pipeline {
         dir ('java-maven-sonar-argocd-helm-k8s/spring-boot-app'){
           
           sh 'pwd'
-          sh 'mvn clean package '  
+          sh 'mvn clean package -B -U -DskipTests '  
           sh 'ls -lt target/*.jar'
 
         }
