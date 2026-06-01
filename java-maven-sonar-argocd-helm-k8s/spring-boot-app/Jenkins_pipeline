@@ -2,12 +2,6 @@ pipeline {
  
   //docker image with maven built in image is used.
   agent any
-
-  post {
-        always {
-            cleanWs() 
-        }
-    }
  
   stages {
       stage('Cleanup') {
@@ -147,6 +141,12 @@ pipeline {
     } //end of stages 
 
     post {
+        always {
+            script {
+                echo "Cleaning up workspace..."
+                cleanWs(deleteDirs: true)
+            }
+        }
         success {
             script {
                 // Calculate the previous build number
